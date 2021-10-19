@@ -15,12 +15,13 @@ public class ReservationApplication {
         Queue requestQueue = (Queue) initialContext.lookup("queue/requestQueue");
 
         try(ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory();
-            JMSContext context = cf.createContext()) {
+            JMSContext context = cf.createContext(JMSContext.SESSION_TRANSACTED)) {
 
             JMSConsumer consumer = context.createConsumer(requestQueue);
             consumer.setMessageListener(new ReservationListener());
+            context.commit();
 
-            Thread.sleep(1500);
+            Thread.sleep(2500);
 
         } catch (InterruptedException e) {
             e.printStackTrace();

@@ -15,7 +15,7 @@ public class CheckinApplication {
         Queue replyQueue = (Queue) initialContext.lookup("queue/replyQueue");
 
         try(ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory();
-            JMSContext context = cf.createContext()) {
+            JMSContext context = cf.createContext(JMSContext.SESSION_TRANSACTED)) {
 
             JMSProducer producer = context.createProducer();
 
@@ -34,11 +34,23 @@ public class CheckinApplication {
 
             request.setObject(details);
             producer.send(requestQueue, request);
+            context.commit();
 
             JMSConsumer consumer = context.createConsumer(request.getJMSReplyTo());
-            MapMessage response = (MapMessage) consumer.receive();
 
+            MapMessage response = (MapMessage) consumer.receive();
             System.out.println("CHECKIN RESERVATION STATUS: " + response.getString("status"));
+
+            details.setIsReserved(false);
+            request.setObject(details);
+            producer.send(requestQueue, request);
+            context.commit();
+
+            response = (MapMessage) consumer.receive();
+            System.out.println("CHECKIN RESERVATION STATUS: " + response.getString("status"));
+
+            producer.send(requestQueue, request);
+            context.rollback();
 
         } catch (JMSException e) {
             e.printStackTrace();

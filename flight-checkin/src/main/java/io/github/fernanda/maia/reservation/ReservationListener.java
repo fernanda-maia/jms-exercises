@@ -15,12 +15,13 @@ public class ReservationListener implements MessageListener {
         InitialContext initialContext = new InitialContext();
 
         try(ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory();
-            JMSContext context = cf.createContext()) {
+            JMSContext context = cf.createContext(JMSContext.CLIENT_ACKNOWLEDGE)) {
 
             JMSProducer producer = context.createProducer();
 
             ObjectMessage request = (ObjectMessage) message;
             Passenger details = (Passenger) request.getObject();
+            message.acknowledge();
 
             MapMessage response = context.createMapMessage();
             response.setString("status", details.getIsReserved()? "APPROVED" : "REJECTED");

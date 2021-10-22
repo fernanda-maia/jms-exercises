@@ -7,3 +7,4 @@ Repositório para salvar as atividades e exercícios realizados no curso [Java M
 * [Java 16](https://docs.oracle.com/en/java/javase/16/)
 * [Apache Maven](https://maven.apache.org/guides/)
 * [Apache ActiveMQ Artemis](https://activemq.apache.org/components/artemis/)
+* [WildFly](https://www.wildfly.org/)

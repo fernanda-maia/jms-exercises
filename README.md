@@ -8,3 +8,5 @@ Repositório para salvar as atividades e exercícios realizados no curso [Java M
 * [Apache Maven](https://maven.apache.org/guides/)
 * [Apache ActiveMQ Artemis](https://activemq.apache.org/components/artemis/)
 * [WildFly](https://www.wildfly.org/)
+* [Apache Zookeeper](https://zookeeper.apache.org/)
+* [Apache Kafka](https://kafka.apache.org/documentation/)

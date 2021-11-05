@@ -1,13 +1,14 @@
 package io.github.fernanda.maia;
 
+import io.github.fernanda.maia.deserializer.TrackDeserializer;
+import io.github.fernanda.maia.model.Track;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
+import java.util.Collections;
 
 public class TrackConsumer {
 
@@ -15,20 +16,20 @@ public class TrackConsumer {
         Properties props = new Properties();
 
         props.setProperty("bootstrap.servers", "localhost:9092");
-        props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.LongDeserializer");
-        props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.setProperty("key.deserializer", StringDeserializer.class.getName());
+        props.setProperty("value.deserializer", TrackDeserializer.class.getName());
         props.setProperty("group.id", "TrackGroup");
 
-        KafkaConsumer<Long, String> consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(Collections.singletonList("TrackTopic"));
+        KafkaConsumer<String, Track> consumer = new KafkaConsumer<>(props);
+        consumer.subscribe(Collections.singletonList("TrackCSTopic"));
 
-        ConsumerRecords<Long, String> records = consumer.poll(Duration.ofSeconds(20));
+        ConsumerRecords<String, Track> records = consumer.poll(Duration.ofSeconds(20));
 
-        records.forEach(tracking -> {
-            List<String> coordinates = Arrays.asList(tracking.value().split(","));
-            System.out.println("Truck ID: " + tracking.key());
-            System.out.println("Latitude: " + coordinates.get(0));
-            System.out.println("Longitude: " + coordinates.get(1));
+        records.forEach(c -> {
+            System.out.println(c.key());
+            System.out.println("ID: " + c.value().getId());
+            System.out.println("Latitude: " + c.value().getLatitude());
+            System.out.println("Longitude: " + c.value().getLongitude());
         });
 
         consumer.close();

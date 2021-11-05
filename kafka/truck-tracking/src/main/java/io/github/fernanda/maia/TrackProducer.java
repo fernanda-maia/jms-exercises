@@ -1,9 +1,11 @@
 package io.github.fernanda.maia;
 
+import io.github.fernanda.maia.model.Track;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import io.github.fernanda.maia.serializer.TrackSerializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 
-import java.util.List;
 import java.util.Properties;
 
 public class TrackProducer {
@@ -12,15 +14,20 @@ public class TrackProducer {
         Properties props = new Properties();
 
         props.setProperty("bootstrap.servers", "localhost:9092");
-        props.setProperty("key.serializer", "org.apache.kafka.common.serialization.LongSerializer");
-        props.setProperty("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        props.setProperty("key.serializer", StringSerializer.class.getName());
+        props.setProperty("value.serializer", TrackSerializer.class.getName());
 
-        try(KafkaProducer<Long, String> producer = new KafkaProducer<>(props);) {
-            ProducerRecord<Long, String> record = new ProducerRecord<>("TrackTopic", 1L, "22.576N,88.3639E");
+        try(KafkaProducer<String, Track> producer = new KafkaProducer<>(props)) {
+            Track data = new Track();
 
-            producer.send(record, new TrackCallback());
+            data.setId(1L);
+            data.setLatitude("22.576N");
+            data.setLongitude("88.3639E");
 
-        } catch (Exception e) {
+            ProducerRecord<String, Track> record = new ProducerRecord<>("TrackCSTopic", "coordinates", data);
+            producer.send(record);
+
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }

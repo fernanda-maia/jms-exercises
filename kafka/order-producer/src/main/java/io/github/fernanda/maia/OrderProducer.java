@@ -1,5 +1,6 @@
 package io.github.fernanda.maia;
 
+import io.github.fernanda.maia.model.Order;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
@@ -14,30 +15,23 @@ public class OrderProducer {
 
         props.setProperty("bootstrap.servers", "localhost:9092");
 
-        // Produce >> serializer | Consumer >> deserializer
+        // Producer >> serializer | Consumer >> deserializer
         props.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        props.setProperty("value.serializer", "org.apache.kafka.common.serialization.IntegerSerializer");
+        props.setProperty("value.serializer", "io.github.fernanda.maia.serializers.OrderSerializer");
 
-         try(KafkaProducer<String, Integer> producer = new KafkaProducer<>(props);) {
-             ProducerRecord<String, Integer> record = new ProducerRecord<>("OrderTopic", "Macbook Pro", 10);
+        try(KafkaProducer<String, Order> producer = new KafkaProducer<>(props)) {
+            Order order = new Order();
 
-             // Sync call
-             Future<RecordMetadata> send = producer.send(record);
-             RecordMetadata metadata = send.get();
+            order.setCustomer("John Doe");
+            order.setProduct("Macbook Pro");
+            order.setQuantity(1);
 
-             // Async call
-             producer.send(record, new OrderCallback());
+            ProducerRecord<String, Order> record = new ProducerRecord<>("OrderCSTopic", "data", order);
 
-             System.out.println(metadata.partition());
-             System.out.println(metadata.offset());
+            producer.send(record);
 
-             System.out.println("Message sent successfully!");
-
-         } catch (Exception e) {
-             e.printStackTrace();
-         }
-
-
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,12 +1,11 @@
-package io.github.fernanda.maia;
+package io.github.fernanda.maia.kafka.avro.serializers;
 
-import io.github.fernanda.maia.model.Order;
+import io.github.fernanda.maia.kafka.avro.Order;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
+import io.confluent.kafka.serializers.KafkaAvroSerializer;
 
 import java.util.Properties;
-import java.util.concurrent.Future;
 
 public class OrderProducer {
 
@@ -16,8 +15,9 @@ public class OrderProducer {
         props.setProperty("bootstrap.servers", "localhost:9092");
 
         // Producer >> serializer | Consumer >> deserializer
-        props.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        props.setProperty("value.serializer", "io.github.fernanda.maia.serializers.OrderSerializer");
+        props.setProperty("key.serializer", KafkaAvroSerializer.class.getName());
+        props.setProperty("value.serializer", KafkaAvroSerializer.class.getName());
+        props.setProperty("schema.registry.url", "http://localhost:8081");
 
         try(KafkaProducer<String, Order> producer = new KafkaProducer<>(props)) {
             Order order = new Order();
@@ -26,7 +26,7 @@ public class OrderProducer {
             order.setProduct("Macbook Pro");
             order.setQuantity(1);
 
-            ProducerRecord<String, Order> record = new ProducerRecord<>("OrderCSTopic", "data", order);
+            ProducerRecord<String, Order> record = new ProducerRecord<>("OrderAvroTopic", "data", order);
 
             producer.send(record);
 

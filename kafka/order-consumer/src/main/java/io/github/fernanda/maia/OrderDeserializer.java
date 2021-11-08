@@ -1,4 +1,4 @@
-package io.github.fernanda.maia.deserializer;
+package io.github.fernanda.maia;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.fernanda.maia.model.Order;

@@ -1,7 +1,7 @@
-package io.github.fernanda.maia;
+package io.github.fernanda.maia.kafka.avro.deserializer;
 
-import io.github.fernanda.maia.deserializer.OrderDeserializer;
-import io.github.fernanda.maia.model.Order;
+import io.confluent.kafka.serializers.KafkaAvroDeserializer;
+import io.github.fernanda.maia.kafka.avro.Order;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
@@ -17,13 +17,15 @@ public class OrderConsumer {
         props.setProperty("bootstrap.servers", "localhost:9092");
 
         // Producer >> serializer | Consumer >> deserializer
-        props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.setProperty("value.deserializer", OrderDeserializer.class.getName());
+        props.setProperty("key.deserializer", KafkaAvroDeserializer.class.getName());
+        props.setProperty("value.deserializer", KafkaAvroDeserializer.class.getName());
 
         props.setProperty("group.id", "OrderGroup");
+        props.setProperty("schema.registry.url", "http://localhost:8081");
+        props.setProperty("specific.avro.reader", "true");
 
         KafkaConsumer<String, Order> consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(Collections.singletonList("OrderCSTopic"));
+        consumer.subscribe(Collections.singletonList("OrderAvroTopic"));
 
         ConsumerRecords<String, Order> records = consumer.poll(Duration.ofSeconds(20));
 

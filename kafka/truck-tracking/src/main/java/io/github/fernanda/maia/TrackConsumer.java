@@ -1,6 +1,6 @@
 package io.github.fernanda.maia;
 
-import io.github.fernanda.maia.deserializer.TrackDeserializer;
+import io.github.fernanda.maia.kafka.avro.deserializer.TrackDeserializer;
 import io.github.fernanda.maia.model.Track;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;

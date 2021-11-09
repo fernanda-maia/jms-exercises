@@ -1,4 +1,4 @@
-package io.github.fernanda.maia.serializer;
+package io.github.fernanda.maia.model.serializer;
 
 import lombok.SneakyThrows;
 import io.github.fernanda.maia.model.Track;

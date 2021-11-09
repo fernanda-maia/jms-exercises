@@ -1,4 +1,4 @@
-package io.github.fernanda.maia.kafka.avro.deserializer;
+package io.github.fernanda.maia.model.deserializer;
 
 import lombok.SneakyThrows;
 import io.github.fernanda.maia.model.Track;

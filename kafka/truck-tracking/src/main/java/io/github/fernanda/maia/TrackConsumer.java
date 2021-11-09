@@ -1,37 +1,42 @@
 package io.github.fernanda.maia;
 
-import io.github.fernanda.maia.kafka.avro.deserializer.TrackDeserializer;
-import io.github.fernanda.maia.model.Track;
+import io.confluent.kafka.serializers.KafkaAvroDeserializer;
+import io.github.fernanda.maia.kafka.avro.Track;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Properties;
-import java.util.Collections;
 
 public class TrackConsumer {
 
     public static void main(String[] args) {
         Properties props = new Properties();
 
-        props.setProperty("bootstrap.servers", "localhost:9092");
-        props.setProperty("key.deserializer", StringDeserializer.class.getName());
-        props.setProperty("value.deserializer", TrackDeserializer.class.getName());
+        props.setProperty("bootstrap.servers", "http://localhost:9092");
+        props.setProperty("key.deserializer", KafkaAvroDeserializer.class.getName());
+        props.setProperty("value.deserializer", KafkaAvroDeserializer.class.getName());
+        props.setProperty("schema.registry.url", "http://localhost:8081");
         props.setProperty("group.id", "TrackGroup");
+        props.setProperty("specific.avro.reader", "true");
 
-        KafkaConsumer<String, Track> consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(Collections.singletonList("TrackCSTopic"));
+        try(KafkaConsumer<Long, Track> consumer = new KafkaConsumer<>(props)) {
+            consumer.subscribe(Arrays.asList("TrackAvroTopic"));
 
-        ConsumerRecords<String, Track> records = consumer.poll(Duration.ofSeconds(20));
+            while(true) {
+                ConsumerRecords<Long, Track> records = consumer.poll(Duration.ofSeconds(20));
 
-        records.forEach(c -> {
-            System.out.println(c.key());
-            System.out.println("ID: " + c.value().getId());
-            System.out.println("Latitude: " + c.value().getLatitude());
-            System.out.println("Longitude: " + c.value().getLongitude());
-        });
+                records.forEach(c -> {
+                    Track coordinates = c.value();
+                    System.out.println("ID: " + c.key());
+                    System.out.println("LATITUDE: " + coordinates.getLatitude());
+                    System.out.println("LONGITUDE: " + coordinates.getLongitude());
+                });
+            }
 
-        consumer.close();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 }

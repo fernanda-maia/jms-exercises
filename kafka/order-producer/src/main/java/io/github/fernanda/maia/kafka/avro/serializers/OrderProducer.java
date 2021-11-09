@@ -29,7 +29,6 @@ public class OrderProducer {
             ProducerRecord<String, Order> record = new ProducerRecord<>("OrderAvroTopic", "data", order);
 
             producer.send(record);
-
         } catch (Exception e) {
             e.printStackTrace();
         }

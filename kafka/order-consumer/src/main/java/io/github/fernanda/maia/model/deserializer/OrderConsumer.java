@@ -1,4 +1,4 @@
-package io.github.fernanda.maia.kafka.avro.deserializer;
+package io.github.fernanda.maia.model.deserializer;
 
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import io.github.fernanda.maia.kafka.avro.Order;
@@ -24,19 +24,20 @@ public class OrderConsumer {
         props.setProperty("schema.registry.url", "http://localhost:8081");
         props.setProperty("specific.avro.reader", "true");
 
-        KafkaConsumer<String, Order> consumer = new KafkaConsumer<>(props);
-        consumer.subscribe(Collections.singletonList("OrderAvroTopic"));
+        try (KafkaConsumer<String, Order> consumer = new KafkaConsumer<>(props);) {
+            consumer.subscribe(Collections.singletonList("OrderAvroTopic"));
 
-        ConsumerRecords<String, Order> records = consumer.poll(Duration.ofSeconds(20));
+            while(true) {
+                ConsumerRecords<String, Order> records = consumer.poll(Duration.ofSeconds(20));
 
-        records.forEach(order -> {
-            System.out.println(order.key());
-            System.out.println("Customer: " + order.value().getCustomer());
-            System.out.println("Product Name: " + order.value().getProduct());
-            System.out.println("Quantity: " + order.value().getQuantity());
-        });
+                records.forEach(order -> {
+                    System.out.println(order.key());
+                    System.out.println("Customer: " + order.value().getCustomer());
+                    System.out.println("Product Name: " + order.value().getProduct());
+                    System.out.println("Quantity: " + order.value().getQuantity());
+                });
 
-        consumer.close();
-
+            }
+        }
     }
 }

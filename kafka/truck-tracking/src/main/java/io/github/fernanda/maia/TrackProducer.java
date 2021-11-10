@@ -2,6 +2,7 @@ package io.github.fernanda.maia;
 
 import io.confluent.kafka.serializers.KafkaAvroSerializer;
 import io.github.fernanda.maia.kafka.avro.Track;
+import io.github.fernanda.maia.partitioner.TrackPartitioner;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
@@ -16,16 +17,17 @@ public class TrackProducer {
         props.setProperty("key.serializer", KafkaAvroSerializer.class.getName());
         props.setProperty("value.serializer", KafkaAvroSerializer.class.getName());
         props.setProperty("schema.registry.url", "http://localhost:8081");
+        props.setProperty("partitioner.class", TrackPartitioner.class.getName());
 
         try(KafkaProducer<Long, Track> producer = new KafkaProducer<>(props)) {
 
             Track track = Track.newBuilder()
                     .setId(1L)
-                    .setLatitude("20.576N")
-                    .setLongitude("89.3639E")
+                    .setLatitude("37.2431N")
+                    .setLongitude("115.793W")
                     .build();
 
-            ProducerRecord<Long, Track> record = new ProducerRecord<>("TrackAvroTopic", track.getId(), track);
+            ProducerRecord<Long, Track> record = new ProducerRecord<>("TrackPartitionsTopic", track.getId(), track);
 
             producer.send(record);
 

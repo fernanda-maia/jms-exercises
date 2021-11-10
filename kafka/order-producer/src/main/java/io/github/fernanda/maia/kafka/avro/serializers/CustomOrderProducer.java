@@ -5,7 +5,6 @@ import io.github.fernanda.maia.model.Order;
 import io.github.fernanda.maia.partitioners.VIPPartitioner;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.record.Record;
 import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Properties;

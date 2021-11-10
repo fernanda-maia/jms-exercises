@@ -22,16 +22,17 @@ public class TrackConsumer {
         props.setProperty("specific.avro.reader", "true");
 
         try(KafkaConsumer<Long, Track> consumer = new KafkaConsumer<>(props)) {
-            consumer.subscribe(Arrays.asList("TrackAvroTopic"));
+            consumer.subscribe(Arrays.asList("TrackAvroTopic", "TrackPartitionsTopic"));
 
             while(true) {
                 ConsumerRecords<Long, Track> records = consumer.poll(Duration.ofSeconds(20));
 
                 records.forEach(c -> {
                     Track coordinates = c.value();
-                    System.out.println("ID: " + c.key());
+                    System.out.println("\nID: " + c.key());
                     System.out.println("LATITUDE: " + coordinates.getLatitude());
                     System.out.println("LONGITUDE: " + coordinates.getLongitude());
+                    System.out.println("PARTITION: " + c.partition());
                 });
             }
 
